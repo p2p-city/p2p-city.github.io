@@ -371,6 +371,21 @@ html.in-city .terminal #log{height:auto!important;max-height:3.4em!important;ove
 /* маленький экран в городе: карта не влезает целиком, панель с деньгами и лентой не прилипает поверх задания */
 body.city-tight .topbar{position:static!important}
 
+/* Часы дня и звёзды розыска в верхней панели */
+.hud-city{display:flex;align-items:center;gap:8px;margin-top:7px}
+.city-time{display:inline-flex;align-items:center;gap:8px}
+.city-clock{display:inline-flex;align-items:center;gap:8px;flex:1;min-width:0;line-height:1;white-space:nowrap}
+.city-time .city-clock{flex:none}
+.city-clock .clk{font-weight:800;font-size:14px;color:#e8eefc;font-variant-numeric:tabular-nums}
+.city-clock .clk::before{content:"🕗 ";font-weight:400;font-size:12px}
+.city-clock .dayline{display:block;flex:1;min-width:30px;height:4px;border-radius:9px;background:#ffffff14;overflow:hidden}
+.city-clock .dayline u{display:block;height:100%;background:linear-gradient(90deg,#4fd1ff,#ffcc44);transition:width .4s}
+.city-clock.late .clk{color:#ffb15c}
+.city-clock.late .dayline u{background:linear-gradient(90deg,#ffcc44,#ff5a3c)}
+.city-stars{flex:none;color:#ffcc44;font-size:14px;letter-spacing:1px;line-height:1;white-space:nowrap}
+.city-stars u{text-decoration:none;color:#5b6478}
+.city-stars.s3,.city-stars.s4,.city-stars.s5{color:#ff5a5a;text-shadow:0 0 8px #ff5a5a66}
+
 </style>
 <body>
 <header class="brand"><b>Арбитражник.</b> <span>Сити</span><button id=snd class="snd" onclick="toggleSound()" aria-label="Выключить звук: я на паре" title="Выключить звук: я на паре">🔊</button><details class="rules"><summary>Как играть</summary><p>Один круг на дропа в день, затем «Следующий день». Сохраняй партию кнопкой. Машина, медийность и курсы — дополнительные пути, не обязательная покупка.</p><p>Все цены, доходность и сюжеты условные игровые. Диалоги — сатира, не юридические советы.</p></details></header>
@@ -1196,7 +1211,7 @@ const CITY_T={
   "btnPhone": "📱 Телефон",
   "firstHint": "Тапай, куда идти. Среди прохожих — менты в штатском. Выглядят как все, пока ты несёшь пачку от банкомата.",
   "bag": "В кармане",
-  "nextBlocked": "💼 Пачка в кармане. Утро не наступит, пока она не в крипте или под матрасом.",
+  "nextBlocked": "💼 Пачка в кармане — не уснёшь. Сначала в крипту или под матрас. В 23:00 её пересчитают без тебя.",
   "phoneHint": "Стакан — в «Федерации», тачки — на паркинге, смена — у «Афимолла»."
  },
  "places": {
@@ -1332,6 +1347,68 @@ const CITY_T={
    "Он бежит. Ты быстрее. Пока.",
    "Не оборачивайся. Он догоняет"
   ]
+  },
+ "clock": {
+  "btnSleep": "🛏 Спать",
+  "onboard": "Жми 🛏 Спать или гуляй до 23:00. Жар остынет. Наверное",
+  "firstHint": "🕗 В Сити идёт время: с 8:00 до 23:00, тратит его ходьба и дела. Синие с мигалкой — патруль, ходят по своим улицам. Красные круги — камеры. Пачку под ними не носи: звёзды.",
+  "hudTitle": "Время в Сити и звёзды розыска",
+  "hudStars": "Розыск: {N} из 5",
+  "late": "⏰ 21:00. Через два часа Сити закрывается. Для тебя — точно.",
+  "night": [
+   "🌙 23:00. Охранник в лобби выключил свет и тебя заодно. До утра.",
+   "🌙 23:00. Башни погасили окна. Ты — телефон. Спать.",
+   "🌙 23:00. Последний прохожий оказался просто прохожим. Повезло. Домой."
+  ],
+  "nightBag": [
+   "🌙 23:00, пачка в кармане. У подъезда наряд спросил «что несём». Унёс {SUM}. До студии дошли {REST}.",
+   "🌙 Ночь застала с налом. Пересчитали на капоте: минус {SUM}. Остаток {REST} — под матрас, тебя — в базу.",
+   "🌙 23:00. Таксист с пачкой не повёз, патруль повёз — до угла. Минус {SUM}, домой донёс {REST}."
+  ]
+ },
+ "patrol": {
+  "names": [
+   "сержант Маршрутов",
+   "младший сержант Обходько",
+   "прапорщик Кругалёв",
+   "сержант Постовой"
+  ],
+  "noticed": [
+   "🚨 Патруль свистнул. Свисток — тебе.",
+   "🚨 Наряд развернулся. Маршрут у них сменился: теперь он — ты.",
+   "🚨 «Молодой человек!» — на весь квартал. Молодой человек тут один, с карманом."
+  ],
+  "radio": [
+   "📻 Патрульный сказал что-то в рацию. Один прохожий перестал быть прохожим.",
+   "📻 Рация у наряда прохрипела твои приметы. Кто-то в толпе их записал."
+  ],
+  "introBag": [
+   "«Патрульно-постовая. Документы и что в кармане. Документы можно потом».",
+   "«Стоим. Карман оттопырен, лицо честное. Так не бывает».",
+   "«Мы тут каждые десять минут ходим. Ты — третий раз. С тем же карманом».",
+   "«Камера сказала, ты сюда пойдёшь. Камера не врёт. Ты — посмотрим»."
+  ],
+  "introHeat": [
+   "«Ориентировку видели? Вот и я смотрю — похож».",
+   "«Стоять. Звёзд на тебе больше, чем у меня на погонах».",
+   "«По рации сказали: худой, в куртке, нервный. Два из трёх уже сходится»."
+  ]
+ },
+ "cam": {
+  "hit": [
+   "📹 Камера повернулась за тобой. Медленно, как охранник в «Сквозняке».",
+   "📹 Прошёл под камерой с карманом наперевес. Где-то оператор отложил шаурму.",
+   "📹 Попал в кадр с пачкой. Лучший ракурс за день — и не для сторис."
+  ]
+ },
+ "wanted": {
+  "up": [
+   "⭐ Одна звезда. Пока это просто «знакомое лицо».",
+   "⭐ Две звезды. Людей в одинаковых пуховиках на улицах стало больше.",
+   "⭐ Три звезды. Патруль звонит своим, а тормозят уже без пачки — по лицу.",
+   "⭐ Четыре звезды. Тебя узнаёт даже охранник «Сквозняка». Он и раньше узнавал, но молчал.",
+   "⭐ Пять звёзд. Твоя фотка висит в дежурке. Рядом с графиком отпусков."
+  ]
  }
 };
 
@@ -1349,11 +1426,11 @@ const CITY_EVO={name:CITY_MAP.evo.n,col:CITY_MAP.evo.c,edge:CITY_MAP.evo.e,s:CIT
 const CITY_WATER=CITY_MAP.water.map(p=>({p,...cityBox(p)})),CITY_BRIDGE={p:CITY_MAP.bridge,...cityBox(CITY_MAP.bridge)};
 const CITY_WALLS=CITY_MAP.roads.filter(r=>r.b&&r.w>=24).map(r=>({w:r.w,p:r.p,...cityBox(r.p)}));
 const CITY_PL=[['home','🏠'],['office','📊'],['oko','👁'],['atm1','🏧'],['parking','🅿️'],['exchange','💱'],['sklad','📦'],['atm2','🏧']].map(([id,e])=>({id,e,x:CITY_MAP.pl[id][0],y:CITY_MAP.pl[id][1]}));
-const CITY_RT={npcs:[],path:[],keys:{},cv:null,ctx:null,raf:0,last:0,t:0,at:null,day:-1,coolEnc:0,budget:0,chaser:null,dirty:false,tap:null,bound:false,lamps:null,z:1,cars:null,labels:null};
-const cityFill=(s,o)=>String(s).replace(/\{(SUM|PROFIT|FEE)\}/g,(m,k)=>o[k]!==undefined?o[k]:m);
+const CITY_RT={npcs:[],pats:[],path:[],keys:{},cv:null,ctx:null,raf:0,last:0,t:0,at:null,day:-1,coolEnc:0,budget:0,chaser:null,dirty:false,tap:null,bound:false,lamps:null,z:1,cars:null,labels:null};
+const cityFill=(s,o)=>String(s).replace(/\{(SUM|PROFIT|FEE|REST)\}/g,(m,k)=>o[k]!==undefined?o[k]:m);
 function cityHome(){const p=CITY_PL[0];return {x:p.x,y:p.y}}
 function cityInit(){if(!S)return;if(!S.city||typeof S.city!=='object')S.city={pos:cityHome(),bag:0,exDay:0,seen:false,enc:null,chase:null,ret:false,stats:{enc:0,lost:0},map:2};
- const c=S.city;if(!c.pos||!Number.isFinite(c.pos.x)||c.map!==2){c.pos=cityHome();c.map=2}if(!Number.isFinite(c.bag))c.bag=0;c.stats=c.stats||{enc:0,lost:0};
+ const c=S.city;if(!c.pos||!Number.isFinite(c.pos.x)||c.map!==2){c.pos=cityHome();c.map=2}if(!Number.isFinite(c.bag))c.bag=0;c.stats=c.stats||{enc:0,lost:0};cityWantedInit(c);
  if(c.chase&&!CITY_RT.chaser&&!CITY_RT.npcs.length){c.chase=null}}
 
 // ----- сетка проходимости и путь -----
@@ -1397,15 +1474,15 @@ function cityRandPt(x,y,rad){for(let k=0;k<20;k++){const px=x+r(-rad,rad),py=y+r
 
 // ----- места -----
 function cityPlaceAt(pos){const p=pos||(S.city&&S.city.pos);if(!p)return null;for(const pl of CITY_PL)if(Math.hypot(pl.x-p.x,pl.y-p.y)<CITY_ZONE)return pl.id;return null}
-function cityGo(){if(!ready())return;cityInit();S.city.ret=false;if(!S.city.seen){S.city.seen=true;log(CITY_T.ui.firstHint,'b')}CITY_RT.at=null;setMode('city')}
+function cityGo(){if(!ready())return;cityInit();S.city.ret=false;if(!S.city.seen){S.city.seen=true;log(CITY_T.ui.firstHint,'b')}if(!S.city.seen2){S.city.seen2=true;log(CITY_T.clock.firstHint,'b')}CITY_RT.at=null;CITY_RT.camIn=null;setMode('city')}
 function cityPhone(){if(!ready())return;S.city.ret=false;setMode('main')}
 function cityAct(id){const c=S.city;if(!ready()||!c||S.mode!=='city'||cityPlaceAt()!==id)return;
  if(id==='home'){if(c.bag>0)return cityDeposit('home');c.ret=false;return setMode('main')} // с пачкой кнопка студии только прячет её
  if(id==='exchange')return cityExchange();
  if(id==='atm1'||id==='atm2')return cityWithdraw(id);
- if(id==='sklad')return delivery();
+ if(id==='sklad'){const ok=available('delivery');delivery();if(ok&&!available('delivery'))cityAdvance(CITY_COST.sklad);return}
  if(id==='oko')return cityOko();
- c.ret=true;if(id==='office')return openBook();if(id==='parking')return setMode('m5')}
+ c.ret=true;if(id==='office'){openBook();if(S.mode==='book')cityAdvance(CITY_COST.office);return}if(id==='parking'){cityAdvance(CITY_COST.parking);return setMode('m5')}}
 // Цепочка денег: банкомат (снять наличку) → пешком через Сити → обменник (купить USDT ниже рынка, навар 5–8%, без лимита в день;
 // оборот ограничен банкоматами: 2 × 100 000 ₽ в день).
 const CITY_ATM_MAX=100000,CITY_ATM_FEE=.01,CITY_EX_MIN=20000;
@@ -1413,49 +1490,50 @@ function cityAtmUsed(id){return !!(S.city.atm&&S.city.atm[id]===S.day)}
 function cityWithdraw(id){const c=S.city;if(!ready()||!c||cityPlaceAt()!==id)return;
  if(cityAtmUsed(id)){log(CITY_T.log.atmUsed,'y');return render()}
  const sum=Math.min(Math.floor(S.cash/1000)*1000,CITY_ATM_MAX);if(sum<5000){log(CITY_T.log.atmNoMoney,'y');return render()}
- const fee=Math.round(sum*CITY_ATM_FEE);S.cash-=sum;c.bag+=sum-fee;c.atm=c.atm||{};c.atm[id]=S.day;heat(2);
+ const fee=Math.round(sum*CITY_ATM_FEE);S.cash-=sum;c.bag+=sum-fee;c.atm=c.atm||{};c.atm[id]=S.day;heat(2);cityAdvance(CITY_COST.atm);
  log(cityFill(pick(CITY_T.log.withdrawAtm),{SUM:fmt(sum),FEE:fmt(fee)}),'y');render()}
 function cityExchange(){const c=S.city;if(!ready()||!c||cityPlaceAt()!=='exchange')return;
  if(c.bag<CITY_EX_MIN){log(CITY_T.log.exchangeNoMoney,'y');return render()}
- const sum=c.bag,profit=Math.round(sum*r(.05,.08));c.bag=0;S.cash+=sum+profit;c.exDay=S.day;c.bought=(c.bought||0)+1;S.xp=(S.xp||0)+1;
+ const sum=c.bag,profit=Math.round(sum*r(.05,.08));c.bag=0;S.cash+=sum+profit;c.exDay=S.day;c.bought=(c.bought||0)+1;S.xp=(S.xp||0)+1;cityAdvance(CITY_COST.exchange);
  log(cityFill(pick(CITY_T.log.exchangeOk),{SUM:fmt(sum),PROFIT:fmt(profit)}),'g');render()}
 function cityDeposit(kind){const c=S.city;if(!c||S.over||busy()||kind!=='home'||cityPlaceAt()!=='home'||c.bag<=0)return;
- const sum=c.bag;c.bag=0;S.cash+=sum;log(cityFill(pick(CITY_T.log.stashHome),{SUM:fmt(sum)}),'b');render()}
+ const sum=c.bag;c.bag=0;S.cash+=sum;cityAdvance(CITY_COST.stash);log(cityFill(pick(CITY_T.log.stashHome),{SUM:fmt(sum)}),'b');render()}
 function cityOko(){if(!ready()||cityPlaceAt()!=='oko')return;if(!available('oko')){log(CITY_T.log.okoUsed,'y');return render()}
- S.actions.oko=S.day;media(3);log(pick(CITY_T.log.okoStory),'g');render()}
+ S.actions.oko=S.day;media(3);cityAdvance(CITY_COST.oko);log(pick(CITY_T.log.okoStory),'g');render()}
 
 // ----- менты в штатском -----
 function cityLoss(bagShare,cashShare,cap){const c=S.city;return c.bag>0?Math.round(c.bag*bagShare):Math.max(0,Math.min(Math.round(S.cash*cashShare),cap))}
 function cityTake(sum){const c=S.city,fromBag=Math.min(c.bag,sum);c.bag-=fromBag;S.cash=Math.max(0,S.cash-(sum-fromBag));c.stats.lost+=sum}
 function cityMeet(n){const c=S.city;if(!c||c.enc||c.chase||S.over)return;const bag=c.bag>0,sum=bag?Math.round(c.bag*r(.1,.15)):Math.min(Math.round(S.cash*.08),25000);
  if(sum<1000){if(n){n.st='walk';n.cool=30}return}
- CITY_RT.path=[];c.enc={name:n&&n.name||pick(CITY_T.cop.names),nid:n?CITY_RT.npcs.indexOf(n):-1,bag,sum,intro:cityFill(pick(bag?CITY_T.cop.introBag:CITY_T.cop.introHeat),{SUM:fmt(c.bag)})};render()}
+ const pat=!!(n&&n.pat),T=pat?CITY_T.patrol:CITY_T.cop;CITY_RT.path=[];c.enc={name:n&&n.name||pick(T.names),nid:n&&!pat?CITY_RT.npcs.indexOf(n):-1,pid:pat?CITY_RT.pats.indexOf(n):-1,pat,bag,sum,intro:cityFill(pick(bag?T.introBag:T.introHeat),{SUM:fmt(c.bag)})};render()}
 function cityRelease(n){if(n){n.st='walk';n.cool=45;n.path=[]}CITY_RT.coolEnc=20}
 function cityCop(kind){const c=S.city,e=c&&c.enc;if(S.over||!e||!['pay','talk','run'].includes(kind))return;
- const n=CITY_RT.npcs[e.nid]&&CITY_RT.npcs[e.nid].cop?CITY_RT.npcs[e.nid]:null;c.enc=null;c.stats.enc++;
+ const n=e.pat?CITY_RT.pats[e.pid]||null:CITY_RT.npcs[e.nid]&&CITY_RT.npcs[e.nid].cop?CITY_RT.npcs[e.nid]:null;c.enc=null;c.stats.enc++;
  if(kind==='pay'){cityTake(e.sum);log(cityFill(pick(CITY_T.cop.pay),{SUM:fmt(e.sum)}),'y');cityRelease(n);return render()}
  if(kind==='talk'){if(ch(Math.max(.12,.55-S.heat/250-(e.bag?.1:0))))log(pick(CITY_T.cop.talkOk),'g');
-  else{const s=cityLoss(.25,.12,40000);cityTake(s);heat(5);log(cityFill(pick(CITY_T.cop.talkFail),{SUM:fmt(s)}),'r')}cityRelease(n);return render()}
+  else{const s=cityLoss(.25,.12,40000);cityTake(s);heat(5);cityIncident('fail');log(cityFill(pick(CITY_T.cop.talkFail),{SUM:fmt(s)}),'r')}cityRelease(n);return render()}
  let ch2=n;if(!ch2){const p=c.pos;ch2={x:p.x-30,y:p.y-30,path:[],cop:true,st:'walk',col:'#2f343d',spd:60,face:0,wait:0,cool:0,name:e.name,re:0};CITY_RT.npcs.push(ch2)}
- ch2.st='chase';ch2.path=[];CITY_RT.chaser=ch2;c.chase={t:CITY_CHASE_T,name:e.name,line:pick(CITY_T.cop.chase)};render()}
+ ch2.st='chase';ch2.path=[];CITY_RT.chaser=ch2;cityIncident('run');c.chase={t:CITY_CHASE_T,name:e.name,line:pick(CITY_T.cop.chase)};render()}
 function cityChaseEnd(caught){const c=S.city;if(!c||!c.chase)return;const name=c.chase.name;c.chase=null;cityRelease(CITY_RT.chaser);CITY_RT.chaser=null;
  if(!caught){heat(4);log(pick(CITY_T.cop.runOk),'y');return render()}
- if(S.heat>=70){log(pick(CITY_T.cop.toOtdel),'r');S.lastCop=S.day;S.copCount=(S.copCount||0)+1;c.ret=true;return setMode('cop',{q:0,sc:0,qs:copQs(),hist:[],pressure:S.heat,officer:name})}
- const s=cityLoss(.5,.15,60000);cityTake(s);heat(12);log(cityFill(pick(CITY_T.cop.runCaught),{SUM:fmt(s)}),'r');render()}
+ if(S.heat>=70){cityIncident('otdel');log(pick(CITY_T.cop.toOtdel),'r');S.lastCop=S.day;S.copCount=(S.copCount||0)+1;c.ret=true;return setMode('cop',{q:0,sc:0,qs:copQs(),hist:[],pressure:S.heat,officer:name})}
+ const s=cityLoss(.5,.15,60000);cityTake(s);heat(12);cityIncident('caught');log(cityFill(pick(CITY_T.cop.runCaught),{SUM:fmt(s)}),'r');render()}
 
 // ----- жители -----
 const CITY_COLS=['#d65a5a','#5a8fd6','#d6b45a','#7ad65a','#b45ad6','#5ad6c8','#e0e0e0','#c27a3a','#2f343d','#3a3f48'];
 function citySpawnPt(){const p=S.city.pos;for(let k=0;k<40;k++){const x=r(40,CITY_W-40),y=r(200,CITY_H-60);if(!cityBlockedPt(x,y,12)&&cityFree(x/CITY_CELL|0,y/CITY_CELL|0)&&Math.hypot(x-p.x,y-p.y)>280)return {x,y}}return {x:p.x+300,y:p.y}}
 function cityNpc(cop){const p=citySpawnPt();return {x:p.x,y:p.y,path:[],cop,st:'walk',col:cop?pick(['#2f343d','#3a3f48','#33302b']):pick(CITY_COLS),spd:cop?r(48,60):r(42,72),face:r(0,6.28),wait:r(0,2),cool:cop?6:0,lost:0,re:0,name:cop?pick(CITY_T.cop.names):''}}
-function cityCops(){return Math.min(4,1+Math.floor(S.heat/25))}
-function cityEnsurePop(){if(CITY_RT.day!==S.day||!CITY_RT.npcs.length){CITY_RT.day=S.day;CITY_RT.chaser=null;CITY_RT.npcs=[];for(let k=0;k<14;k++)CITY_RT.npcs.push(cityNpc(false));for(let k=0;k<cityCops();k++)CITY_RT.npcs.push(cityNpc(true))}
- else if(CITY_RT.npcs.filter(n=>n.cop).length<cityCops())CITY_RT.npcs.push(cityNpc(true))}
+function cityCops(){return Math.min(5,Math.max(Math.min(4,1+Math.floor(S.heat/25)),1+cityStars()))} // звёзды добавляют ментов сверх прежней нормы по жару
+function cityEnsurePop(){if(CITY_RT.day!==S.day||!CITY_RT.npcs.length){CITY_RT.day=S.day;CITY_RT.chaser=null;CITY_RT.npcs=[];CITY_RT.pats=[];for(let k=0;k<14;k++)CITY_RT.npcs.push(cityNpc(false));for(let k=0;k<cityCops();k++)CITY_RT.npcs.push(cityNpc(true))}
+ else if(CITY_RT.npcs.filter(n=>n.cop).length<cityCops())CITY_RT.npcs.push(cityNpc(true));
+ while(CITY_RT.pats.length<cityPatrols())CITY_RT.pats.push(cityPatrolNpc(CITY_RT.pats.length))}
 function cityStep(o,spd,dt){let left=spd*dt;while(left>0&&o.path.length){const w=o.path[0],dx=w.x-o.x,dy=w.y-o.y,d=Math.hypot(dx,dy);if(d<.5){o.path.shift();continue}o.face=Math.atan2(dy,dx);if(left<d){o.x+=dx*left/d;o.y+=dy*left/d;return}o.x=w.x;o.y=w.y;left-=d;o.path.shift()}}
 function cityFollow(n,p,spd,dt,re){n.re-=dt;if(cityLOS(n,p))n.path=[{x:p.x,y:p.y}];else if(n.re<=0&&CITY_RT.budget>0){CITY_RT.budget--;n.re=re;n.path=cityPath(n.x,n.y,p.x,p.y)||[]}cityStep(n,spd,dt)}
 function cityMoveNpc(n,dt){const c=S.city,p=c.pos,d=Math.hypot(n.x-p.x,n.y-p.y);if(n.cool>0)n.cool-=dt;
  if(n===CITY_RT.chaser&&c.chase){cityFollow(n,p,CITY_COP_CHASE,dt,.3);return}
- if(n.cop){const hot=c.bag>0||S.heat>=40;
-  if(n.st==='walk'&&hot&&n.cool<=0&&CITY_RT.coolEnc<=0&&!c.chase&&d<130+S.heat*.8){n.st='hunt';n.lost=0;n.re=0;log(pick(CITY_T.cop.noticed),'y');CITY_RT.dirty=true}
+ if(n.cop){const st=cityStars(),hot=c.bag>0||S.heat>=40||st>=3;
+  if(n.st==='walk'&&hot&&n.cool<=0&&CITY_RT.coolEnc<=0&&!c.chase&&d<130+S.heat*.8+st*CITY_STAR_SEE){n.st='hunt';n.lost=0;n.re=0;log(pick(CITY_T.cop.noticed),'y');CITY_RT.dirty=true}
   if(n.st==='hunt'){if(!hot||c.chase){n.st='walk';n.cool=10;n.path=[]}else{cityFollow(n,p,CITY_COP_HUNT,dt,.5);if(d>320+S.heat){n.lost+=dt;if(n.lost>2.5){n.st='walk';n.cool=15;n.path=[]}}else n.lost=0;if(d<18)cityMeet(n);return}}}
  if(n.path.length)cityStep(n,n.spd,dt);else if((n.wait-=dt)<=0&&CITY_RT.budget>0){CITY_RT.budget--;const t=cityRandPt(n.x,n.y,380);n.path=t&&cityPath(n.x,n.y,t.x,t.y)||[];n.wait=n.cop?r(1.5,4.5):r(.3,2)}}
 function cityMovePlayer(dt){const c=S.city,k=CITY_RT.keys;let vx=(k.right?1:0)-(k.left?1:0),vy=(k.down?1:0)-(k.up?1:0);
@@ -1464,9 +1542,10 @@ function cityMovePlayer(dt){const c=S.city,k=CITY_RT.keys;let vx=(k.right?1:0)-(
 function cityWalkTo(x,y){const c=S.city;if(!c||c.enc||S.over)return;for(const pl of CITY_PL)if(Math.hypot(pl.x-x,pl.y-y)<40){x=pl.x;y=pl.y}CITY_RT.path=cityPath(c.pos.x,c.pos.y,x,y)||[];CITY_RT.tap={x,y,t:CITY_RT.t}}
 function cityZone(){const id=cityPlaceAt();if(id!==CITY_RT.at){CITY_RT.at=id;CITY_RT.dirty=true}} // пачку дома прячут кнопкой: студия стоит на пути от банкомата к обменнику
 function cityTick(dt){const c=S.city;if(!c||S.over||S.mode!=='city')return;CITY_RT.t+=dt;if(c.enc)return;
- if(CITY_RT.coolEnc>0)CITY_RT.coolEnc-=dt;CITY_RT.budget=3;cityEnsurePop();cityMovePlayer(dt);for(const n of CITY_RT.npcs.slice())cityMoveNpc(n,dt);
+ if(CITY_RT.coolEnc>0)CITY_RT.coolEnc-=dt;CITY_RT.budget=3;cityEnsurePop();const px=c.pos.x,py=c.pos.y;cityMovePlayer(dt);cityClockStep(dt,Math.hypot(c.pos.x-px,c.pos.y-py));cityCams();
+ for(const n of CITY_RT.npcs.slice())cityMoveNpc(n,dt);for(const n of CITY_RT.pats.slice())cityMovePatrol(n,dt);
  if(c.chase){c.chase.t-=dt;const n=CITY_RT.chaser;if(!n)cityChaseEnd(false);else{const d=Math.hypot(n.x-c.pos.x,n.y-c.pos.y);if(d<16)cityChaseEnd(true);else if(c.chase.t<=0||d>340)cityChaseEnd(false)}}
- if(S.mode==='city'&&!c.enc)cityZone();if(CITY_RT.dirty){CITY_RT.dirty=false;render()}}
+ if(S.mode==='city'&&!c.enc)cityZone();cityStarsCheck();if(c.clock>=CITY_DAY1&&!c.enc&&!c.chase&&ready()&&S.mode==='city')return cityNightfall();if(CITY_RT.dirty){CITY_RT.dirty=false;render()}}
 
 // ----- рисование -----
 function cityShade(hex,k){const n=parseInt(hex.slice(1),16),f=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`}
@@ -1497,7 +1576,7 @@ function cityDraw(){const cv=CITY_RT.cv,g=CITY_RT.ctx;if(!cv||!g)return;cityPrep
  for(const b of CITY_PODS){if(!vis(b))continue;cityPolyPath(g,b.p);g.fillStyle=cityShade(b.col,1.15);g.fill();g.strokeStyle=b.edge+'66';g.lineWidth=1.5;g.stroke()}
  g.lineJoin='round';g.lineCap='round';for(const r of CITY_RT.roads){if(!vis(r))continue;g.beginPath();r.p.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.strokeStyle=r.b?'#2a3140':'#1a1f29';g.lineWidth=r.w;g.stroke();
   if(r.b){g.strokeStyle='rgba(160,180,210,.35)';g.lineWidth=1.5;g.setLineDash([]);g.stroke()}else if(r.w>=24){g.setLineDash([14,16]);g.strokeStyle='rgba(255,210,90,.3)';g.lineWidth=2;g.stroke();g.setLineDash([])}}
- cityPolyPath(g,CITY_BRIDGE.p);g.fillStyle='#16303f';g.fill();g.strokeStyle='#4fd1ff';g.lineWidth=2;g.stroke();
+ cityDrawRoutes(g);cityPolyPath(g,CITY_BRIDGE.p);g.fillStyle='#16303f';g.fill();g.strokeStyle='#4fd1ff';g.lineWidth=2;g.stroke();
  {const bp=CITY_BRIDGE.p;let far=[bp[0],bp[1]],dm=0;for(const u of bp)for(const v of bp){const d=Math.hypot(u[0]-v[0],u[1]-v[1]);if(d>dm){dm=d;far=[u,v]}}let a=Math.atan2(far[1][1]-far[0][1],far[1][0]-far[0][0]);if(a>Math.PI/2)a-=Math.PI;if(a<-Math.PI/2)a+=Math.PI;g.save();g.translate((far[0][0]+far[1][0])/2,(far[0][1]+far[1][1])/2);g.rotate(a);g.fillStyle='rgba(79,209,255,.75)';g.font='bold 11px system-ui';g.fillText('МОСТ БАГРАТИОН',0,-24);g.restore()}
  for(const [x,y] of CITY_RT.lamps){if(x<x0-30||x>x0+W+30||y<y0-30||y>y0+H+30)continue;g.fillStyle='rgba(255,200,110,.09)';g.beginPath();g.arc(x,y,22,0,6.29);g.fill();g.fillStyle='rgba(255,220,150,.9)';g.beginPath();g.arc(x,y,2.2,0,6.29);g.fill()}
  for(const car of CITY_RT.cars){car.s+=car.v/60;if(car.s>car.r.L)car.s=0;const [px,py,a0]=cityAlong(car.r.p,car.back?car.r.L-car.s:car.s);if(px<x0-60||px>x0+W+60||py<y0-60||py>y0+H+60)continue;const a=a0+(car.back?Math.PI:0),off=car.r.o?0:car.r.w/4;
@@ -1506,7 +1585,7 @@ function cityDraw(){const cv=CITY_RT.cv,g=CITY_RT.ctx;if(!cv||!g)return;cityPrep
  for(const w of CITY_WATER){g.fillStyle='rgba(120,180,230,.35)';g.font='bold 15px system-ui';const lx=Math.max(w.x0+80,Math.min(w.x1-80,cx)),ly=(()=>{for(let y=w.y1;y>w.y0;y-=8)if(cityPip(lx,y,w.p)&&cityPip(lx,y-60,w.p))return y-30;return -999})();if(ly>-999)g.fillText('М О С К В А - Р Е К А',lx,ly)}
  if(CITY_RT.tap&&t-CITY_RT.tap.t<.6){const a=1-(t-CITY_RT.tap.t)/.6;g.strokeStyle=`rgba(255,255,255,${a})`;g.lineWidth=2;g.beginPath();g.arc(CITY_RT.tap.x,CITY_RT.tap.y,6+14*(1-a),0,6.29);g.stroke()}
  const ped=(o,col,me)=>{g.save();g.translate(o.x,o.y);g.rotate(o.face||0);g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(2,3,8,6,0,0,6.29);g.fill();g.fillStyle=col;g.beginPath();g.ellipse(0,0,6.5,10,0,0,6.29);g.fill();g.fillStyle=me?'#ffd7a8':'#d9b38c';g.beginPath();g.arc(1,0,5,0,6.29);g.fill();g.restore()};
- for(const n of CITY_RT.npcs)ped(n,n.col,false);
+ for(const n of CITY_RT.npcs)ped(n,n.col,false);cityDrawPatrols(g,ped,t);
  g.beginPath();g.arc(c.pos.x,c.pos.y,16+2*Math.sin(t*5),0,6.29);g.strokeStyle='rgba(124,255,178,.85)';g.lineWidth=2.5;g.stroke();ped({x:c.pos.x,y:c.pos.y,face:CITY_RT.face},'#7cffb2',true);
  if(c.bag>0){g.fillStyle='#fc4';g.fillRect(c.pos.x+7,c.pos.y-11,9,7);g.fillStyle='#111';g.font='bold 7px system-ui';g.fillText('₽',c.pos.x+11.5,c.pos.y-7.3)}
  const list=CITY_BLD.filter(vis).concat(vis(CITY_EVO)?[CITY_EVO]:[]).sort((u,v)=>((u.hg||300)>60)-((v.hg||300)>60)||u.y1-v.y1); // сначала подиумы и низкие корпуса, потом башни
@@ -1514,7 +1593,7 @@ function cityDraw(){const cv=CITY_RT.cv,g=CITY_RT.ctx;if(!cv||!g)return;cityPrep
   if(b.name){const rx=roof.reduce((s,q)=>s+q[0],0)/roof.length,ry=roof.reduce((s,q)=>s+q[1],0)/roof.length;g.fillStyle='#fff';g.font='bold 17px system-ui';g.fillText(b.name,rx,ry)}}
  for(const pl of CITY_PL){const at=CITY_RT.at===pl.id,pu=.5+.5*Math.sin(t*3+pl.x);g.beginPath();g.arc(pl.x,pl.y,CITY_ZONE-8+pu*4,0,6.29);g.fillStyle=at?'rgba(124,255,178,.18)':'rgba(124,255,178,.07)';g.fill();g.strokeStyle=at?'#7cffb2':'rgba(124,255,178,.45)';g.lineWidth=2;g.stroke();
   g.font='26px system-ui';g.fillStyle='#fff';g.fillText(pl.e,pl.x,pl.y);if(at||Math.hypot(pl.x-c.pos.x,pl.y-c.pos.y)<230){const nm=CITY_T.places[pl.id]&&CITY_T.places[pl.id].name||'';g.font='bold 15px system-ui';const tw=g.measureText(nm).width;g.fillStyle='rgba(9,12,18,.7)';g.fillRect(pl.x-tw/2-5,pl.y+CITY_ZONE-6,tw+10,20);g.fillStyle='rgba(220,235,255,.95)';g.fillText(nm,pl.x,pl.y+CITY_ZONE+4)}}
- g.globalAlpha=.55;g.beginPath();g.arc(c.pos.x,c.pos.y,16,0,6.29);g.strokeStyle='#7cffb2';g.lineWidth=2;g.setLineDash([4,4]);g.stroke();g.setLineDash([]);g.globalAlpha=1;
+ cityDrawOver(g,t);g.globalAlpha=.55;g.beginPath();g.arc(c.pos.x,c.pos.y,16,0,6.29);g.strokeStyle='#7cffb2';g.lineWidth=2;g.setLineDash([4,4]);g.stroke();g.setLineDash([]);g.globalAlpha=1;
  for(const n of CITY_RT.npcs)if(n.cop&&(n.st==='hunt'||n===CITY_RT.chaser)){g.font='16px system-ui';g.fillText('👀',n.x,n.y-18);if(n===CITY_RT.chaser){g.strokeStyle=Math.sin(t*14)>0?'#f44':'#48f';g.lineWidth=2;g.beginPath();g.arc(n.x,n.y,12,0,6.29);g.stroke()}}
  g.font='20px system-ui';for(const pl of CITY_PL){if(pl.x>x0+8&&pl.x<x0+W-8&&pl.y>y0+8&&pl.y<y0+H-8)continue;const dx=pl.x-cx,dy=pl.y-cy,s=Math.min((W/2-20)/Math.abs(dx||1e-6),(H/2-20)/Math.abs(dy||1e-6));const ex=cx+dx*s,ey=cy+dy*s;g.fillStyle='rgba(9,12,18,.85)';g.beginPath();g.arc(ex,ey,17,0,6.29);g.fill();g.strokeStyle='rgba(124,255,178,.5)';g.lineWidth=1.5;g.stroke();g.fillStyle='#fff';g.fillText(pl.e,ex,ey)}
  g.setTransform(dpr,0,0,dpr,0,0);g.textAlign='right';g.textBaseline='bottom';g.font='9px system-ui';g.fillStyle='rgba(200,210,230,.35)';g.fillText('© OpenStreetMap',cv.width/dpr-6,cv.height/dpr-4);g.textAlign='center';g.textBaseline='middle'}
@@ -1544,7 +1623,7 @@ function cityMount(){if(typeof document==='undefined'||!document.createElement||
 
 // ----- экран -----
 function vCity(){const c=S.city,T=CITY_T,at=c.enc?null:cityPlaceAt();let sheet='';
- if(c.enc){const e=c.enc;sheet=`<div class="city-sheet cop-sheet" role="dialog" aria-label="${e.name}"><div class="who">🕶 ${e.name}</div><p>${e.intro}</p><button onclick="cityCop('pay')">${cityFill(T.cop.btnPay,{SUM:fmt(e.sum)})}</button><button onclick="cityCop('talk')">${T.cop.btnTalk}</button><button onclick="cityCop('run')">${T.cop.btnRun}</button></div>`}
+ if(c.enc){const e=c.enc;sheet=`<div class="city-sheet cop-sheet" role="dialog" aria-label="${e.name}"><div class="who">${e.pat?'👮':'🕶'} ${e.name}</div><p>${e.intro}</p><button onclick="cityCop('pay')">${cityFill(T.cop.btnPay,{SUM:fmt(e.sum)})}</button><button onclick="cityCop('talk')">${T.cop.btnTalk}</button><button onclick="cityCop('run')">${T.cop.btnRun}</button></div>`}
  else if(at&&!c.chase){const p=T.places[at],pl=CITY_PL.find(x=>x.id===at);const off=(at==='sklad'&&!available('delivery'))||(at==='office'&&S.bookDay===S.day)||((at==='atm1'||at==='atm2')&&cityAtmUsed(at))||(at==='oko'&&!available('oko'));sheet=`<div class="city-sheet place-sheet"><div class="pl-text"><b>${pl.e} ${p.name}</b><small>${p.sub}</small></div><button ${off?'disabled':''} onclick="cityAct('${at}')">${at==='home'&&c.bag>0?p.stashBtn:p.btn}</button></div>`}
  return `<div class="city${c.chase?' chasing':''}"><div id=cityHost class="city-host"></div><div class="city-hud">${c.bag>0?`<span class="bagchip">💼 ${T.ui.bag} <b>${fmt(c.bag)}</b></span>`:''}${c.chase?`<span class="chase">${c.chase.line}</span>`:''}</div>${c.enc||c.chase?'':`<button class="city-phone" onclick="cityPhone()">${T.ui.btnPhone}</button>`}${sheet}</div>`}
 
@@ -1552,7 +1631,7 @@ function vCity(){const c=S.city,T=CITY_T,at=c.enc?null:cityPlaceAt();let sheet='
 const cityBaseBusy=busy;busy=function(){return cityBaseBusy()||!!(S&&S.city&&(S.city.enc||S.city.chase))};
 const cityBaseCapital=capital;capital=function(){return cityBaseCapital()+(S&&S.city?S.city.bag:0)};
 const cityBaseSetMode=setMode;setMode=function(m,d){if(m==='main'&&S.city&&S.city.ret&&!S.over)m='city';cityBaseSetMode(m,d)};
-const cityBaseNext=next;next=function(){const c=S&&S.city;if(c&&c.bag>0&&!S.over&&S.day<SEASON_DAYS&&ready()){log(CITY_T.ui.nextBlocked,'y');return render()}const day=S.day;cityBaseNext();if(c&&S.day!==day){c.pos=cityHome();CITY_RT.path=[];CITY_RT.at=null}};
+const cityBaseNext=next;next=function(){const c=S&&S.city;if(c&&c.bag>0&&!S.over&&S.day<SEASON_DAYS&&ready()){log(CITY_T.ui.nextBlocked,'y');return render()}const day=S.day;cityBaseNext();if(c&&S.day!==day){c.pos=cityHome();CITY_RT.path=[];CITY_RT.at=null;cityMorning()}};
 const cityBaseMain=vMain;vMain=function(){if(S.mode==='city'&&!S.over)return vCity();const x=cityBaseMain();if(S.over)return x;const btn=`<button class="city-go" onclick="cityGo()">${CITY_T.ui.btnCity}</button>`;
  if(!S.drops.length&&/<button class="hire-big"[^>]*>[^<]*<\/button>/.test(x))return x.replace(/(<button class="hire-big"[^>]*>[^<]*<\/button>)/,'$1'+btn);
  return x.replace('<div class="quick">',btn+'<div class="quick">')};
@@ -1562,6 +1641,99 @@ const cityPhoneMain=vMain;vMain=function(){const x=cityPhoneMain();return S.mode
 const cityBaseRender=render;render=function(){cityInit();if(S.mode==='city'&&S.over)S.mode='main';cityBaseRender();if(typeof document!=='undefined'&&document.documentElement&&document.documentElement.classList)document.documentElement.classList.toggle('in-city',S.mode==='city');if(S.mode==='city'){if(S.city.enc||S.city.chase)$('dock').innerHTML='';cityMount()}};
 if(typeof sndForLog==='function'){const cityBaseSnd=sndForLog;sndForLog=function(t,c){const s=String(t).replace(/<[^>]+>/g,'').trim(),e=((s.match(/^(\p{Extended_Pictographic}\uFE0F?)/u)||[])[1]||'').replace('\uFE0F','');
  switch(e){case '💱':return 'coin';case '🏠':return 'cash';case '🏧':return /^🏧 .*\d/.test(s)?'box':'deny';case '📸':return 'shutter';case '👀':return 'buzz';case '🚓':return c==='g'?'release':'bad';case '💼':return 'deny'}return cityBaseSnd(t,c)}}
+
+// ===== Сити, этап 2: часы дня, патрули, камеры, звёзды розыска. Тексты — CITY_T.clock / patrol / cam / wanted (Opus). =====
+// Часы идут только на карте: ходьба, стояние, банкомат, обменник, места и сцены. В телефоне, в сцене главы и в разговоре с ментом стоят.
+const CITY_DAY0=480,CITY_DAY1=1380,CITY_WARN=1260; // 08:00 — 23:00, предупреждение в 21:00
+const CITY_MIN_WALK=.08,CITY_MIN_IDLE=2; // игровых минут: за единицу пути (≈12 мин за секунду ходьбы), за секунду стояния
+const CITY_COST={atm:15,exchange:20,stash:10,oko:30,sklad:240,office:30,parking:15,scene:15};
+const CITY_NIGHT_TAKE=.3,CITY_NIGHT_HEAT=12; // 23:00 с пачкой: ночной наряд забирает 30%, остаток — домой, жар +12
+// Звёзды 0–5 = ступень жара + происшествия за последние часы. Происшествия остывают: −1 за 2 игровых часа и −2 за ночь.
+const CITY_INC={cam:.6,patrol:.7,run:1,caught:1.5,otdel:2,fail:.5,night:1},CITY_INC_DECAY=120,CITY_INC_NIGHT=2,CITY_INC_MAX=6;
+const CITY_STAR_SEE=15; // мент в штатском замечает на 15 ед. дальше за каждую звезду
+// Камеры: у банкоматов, на подходе к «Сквозняку» со стороны паркинга и на мосту Багратион. Вошёл в зону с пачкой — жар.
+const CITY_CAM_R=56,CITY_CAM_HEAT=3;
+const CITY_CAMS=[{id:'atm1',x:639,y:357},{id:'atm2',x:971,y:864},{id:'exchange',x:652,y:546},{id:'bridge',x:1286,y:938}].map(k=>({...k,r:CITY_CAM_R,flash:-9}));
+// Патрули ППС: постоянные маршруты по осевым линиям настоящих улиц из OSM (точки взяты из CITY_MAP.roads).
+// Туда-обратно или по кругу; чем больше звёзд, тем больше маршрутов занято.
+const CITY_PATROL_WP=[
+ {loop:false,p:[[454,657],[686,529],[725,506],[817,452],[870,422],[964,367],[1028,329]]}, // мимо «Сквозняка» и паркинга
+ {loop:false,p:[[454,657],[424,677],[391,720],[383,760],[385,793],[400,830],[422,855],[466,876],[526,875],[555,865],[717,774],[858,692],[990,617],[1144,527]]}, // у студии, к набережной
+ {loop:true,p:[[554,230],[625,335],[725,506],[686,529],[518,249]]}, // вокруг «Федерации»: банкомат у «Меркурия», коворкинг
+ {loop:false,p:[[874,69],[1283,766],[1226,815],[1115,901],[1016,966]]}]; // Выставочный переулок → Краснопресненская набережная
+const CITY_PAT_SPD=46,CITY_PAT_SEE=80,CITY_PAT_STAR=15,CITY_PAT_RUN=62,CITY_PAT_GIVEUP=6; // патрульный идёт за тобой быстрым шагом (ты 150) и сдаётся через 6 с
+function cityPatrols(){return Math.min(CITY_PATROL_WP.length,2+Math.floor(cityStars()/2))}
+function cityPatrolR(){return CITY_PAT_SEE+cityStars()*CITY_PAT_STAR}
+
+// старые сейвы arbitrazhnik-city-v1: часов и звёзд в них нет — утро, чистая история, текущие звёзды без строки в ленту
+function cityWantedInit(c){if(!Number.isFinite(c.clock)||c.clock<CITY_DAY0||c.clock>CITY_DAY1)c.clock=CITY_DAY0;if(!Number.isFinite(c.inc)||c.inc<0)c.inc=0;if(!Number.isFinite(c.starsMax))c.starsMax=cityStars()}
+function cityStars(){const c=S&&S.city;if(!c)return 0;const h=S.heat,hs=h>=80?3:h>=55?2:h>=30?1:0;return Math.max(0,Math.min(5,hs+Math.floor(c.inc||0)))}
+function cityIncident(kind){const c=S.city;if(!c||!CITY_INC[kind])return;c.inc=Math.min(CITY_INC_MAX,(c.inc||0)+CITY_INC[kind]);CITY_RT.dirty=true;cityStarsCheck()}
+// новый дневной максимум звёзд — строка в ленту; снижение видно только в панели
+function cityStarsCheck(){const c=S&&S.city;if(!c)return;const n=cityStars();if(n!==CITY_RT.stars){CITY_RT.stars=n;CITY_RT.dirty=true}
+ if(n>(c.starsMax||0)){c.starsMax=n;if(!S.over)log(cityFill(CITY_T.wanted.up[Math.min(n,CITY_T.wanted.up.length)-1],{}),n>=3?'r':'y')}}
+function cityAdvance(min){const c=S.city;if(!c||!(min>0))return;const was=c.clock;c.clock=Math.min(CITY_DAY1,c.clock+min);c.inc=Math.max(0,(c.inc||0)-min/CITY_INC_DECAY);
+ if(was<CITY_WARN&&c.clock>=CITY_WARN&&!S.over)log(CITY_T.clock.late,'y');cityClockShow()}
+function cityClockStep(dt,moved){cityAdvance(moved>.01?moved*CITY_MIN_WALK:dt*CITY_MIN_IDLE)}
+function cityClockStr(m){const c=S.city,v=Math.floor((m!==undefined?m:c?c.clock:CITY_DAY0)/5)*5;return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0')}
+function cityMorning(){const c=S.city;c.clock=CITY_DAY0;c.inc=Math.max(0,(c.inc||0)-CITY_INC_NIGHT);c.starsMax=cityStars();CITY_RT.camIn=null;CITY_RT.stars=undefined}
+// 23:00: день кончился сам. С пачкой — ночной наряд у подъезда, а не тихий перенос.
+function cityNightfall(){const c=S.city;if(!c||S.over)return;
+ if(c.bag>0){const lost=Math.round(c.bag*CITY_NIGHT_TAKE);cityTake(lost);const rest=c.bag;c.bag=0;S.cash+=rest;heat(CITY_NIGHT_HEAT);cityIncident('night');log(cityFill(pick(CITY_T.clock.nightBag),{SUM:fmt(lost),REST:fmt(rest)}),'r')}
+ else log(pick(CITY_T.clock.night),'b');
+ CITY_RT.path=[];next()}
+// живые часы в верхней панели без полной перерисовки
+function cityClockShow(){const s=cityClockStr();if(s===CITY_RT.clk)return;CITY_RT.clk=s;if(typeof document==='undefined'||typeof document.querySelector!=='function')return;const el=document.querySelector('#st .clk'),c=S.city;if(!el||!c)return;el.textContent=s;el.parentNode.classList.toggle('late',c.clock>=CITY_WARN);const u=document.querySelector('#st .dayline u');if(u)u.style.width=cityDayPct()+'%'}
+function cityDayPct(){const c=S.city;return Math.round(Math.max(0,Math.min(1,((c?c.clock:CITY_DAY0)-CITY_DAY0)/(CITY_DAY1-CITY_DAY0)))*100)}
+function cityClockHud(row){const c=S.city;if(!c)return '';const n=cityStars(),T=CITY_T.clock,late=c.clock>=CITY_WARN?' late':'';
+ const clock=`<span class="city-clock${late}" title="${T.hudTitle}"><b class="clk">${cityClockStr()}</b>${row?`<i class="dayline"><u style="width:${cityDayPct()}%"></u></i>`:''}</span>`,stars=`<span class="city-stars s${n}" role="img" aria-label="${T.hudStars.replace('{N}',n)}">${'★'.repeat(n)}<u>${'★'.repeat(5-n)}</u></span>`;
+ return row?`<div class="hud-city">${clock}${stars}</div>`:`<span class="city-time">${clock}${stars}</span>`}
+
+// ----- камеры -----
+function cityCams(){const c=S.city;let inn=CITY_RT.camIn;const fresh=!inn;if(fresh)inn=CITY_RT.camIn={};
+ for(const k of CITY_CAMS){const now=Math.hypot(k.x-c.pos.x,k.y-c.pos.y)<k.r;if(now&&!inn[k.id]&&!fresh&&c.bag>0){heat(CITY_CAM_HEAT);cityIncident('cam');k.flash=CITY_RT.t;log(pick(CITY_T.cam.hit),'y');CITY_RT.dirty=true}inn[k.id]=now}}
+
+// ----- патрули -----
+let CITY_PR=null;
+function cityPatrolRoutes(){if(CITY_PR)return CITY_PR;
+ CITY_PR=CITY_PATROL_WP.map(r=>{const wp=r.loop?r.p.concat([r.p[0]]):r.p,s0=cityNearFree(wp[0][0]/CITY_CELL,wp[0][1]/CITY_CELL);let cur={x:(s0%CITY_GW)*CITY_CELL+CITY_CELL/2,y:(s0/CITY_GW|0)*CITY_CELL+CITY_CELL/2};const line=[cur];
+  for(let k=1;k<wp.length;k++){const p=cityPath(cur.x,cur.y,wp[k][0],wp[k][1])||[];for(const q of p)line.push(q);if(p.length)cur=p[p.length-1]}
+  return {loop:r.loop,line,pts:r.loop?line.slice(0,-1):line.concat(line.slice(1,-1).reverse())}});return CITY_PR}
+function cityPatrolNpc(ri){const rt=cityPatrolRoutes()[ri].pts,k=Math.floor(r(0,rt.length))%rt.length,T=CITY_T.patrol;return {pat:true,ri,k,x:rt[k].x,y:rt[k].y,path:[],st:'route',face:0,spd:CITY_PAT_SPD,cool:4,lost:0,re:0,name:T.names[ri%T.names.length],col:'#2a5bd7'}}
+function cityPatrolBack(n){const rt=cityPatrolRoutes()[n.ri].pts;let best=0,dm=1e9;rt.forEach((q,i)=>{const d=Math.hypot(q.x-n.x,q.y-n.y);if(d<dm){dm=d;best=i}});
+ n.st='back';n.k=best;n.lost=0;n.path=cityPath(n.x,n.y,rt[best].x,rt[best].y)||[{x:rt[best].x,y:rt[best].y}]}
+// заметил с пачкой (или при 3+ звёздах) — свисток, жар, звезда; с 3+ звёздами ещё и рация: ближайший мент в штатском идёт к тебе
+function cityRadio(){const c=S.city;let best=null,dm=1e9;for(const n of CITY_RT.npcs)if(n.cop&&n.st==='walk'){const d=Math.hypot(n.x-c.pos.x,n.y-c.pos.y);if(d<dm){dm=d;best=n}}
+ if(best){best.st='hunt';best.cool=0;best.lost=0;best.re=0;best.path=[];log(pick(CITY_T.patrol.radio),'y')}}
+function cityMovePatrol(n,dt){const c=S.city,p=c.pos,d=Math.hypot(n.x-p.x,n.y-p.y);if(n.cool>0)n.cool-=dt;
+ if(n===CITY_RT.chaser&&c.chase){cityFollow(n,p,CITY_COP_CHASE,dt,.3);return}
+ if(n.st==='walk'||n.st==='chase')cityPatrolBack(n); // после разговора или погони — назад на свою улицу
+ const R=cityPatrolR(),hot=c.bag>0||cityStars()>=3;
+ if((n.st==='route'||n.st==='back')&&hot&&n.cool<=0&&CITY_RT.coolEnc<=0&&!c.chase&&d<R&&cityLOS(n,p)){n.st='hunt';n.lost=0;n.re=0;n.ht=0;n.path=[];heat(2);log(pick(CITY_T.patrol.noticed),'y');cityIncident('patrol');if(cityStars()>=3)cityRadio();CITY_RT.dirty=true}
+ if(n.st==='hunt'){n.ht=(n.ht||0)+dt;if(!hot||c.chase){n.cool=10;cityPatrolBack(n);return}cityFollow(n,p,CITY_PAT_RUN,dt,.5);if(d<18)return cityMeet(n);if(d>R*2.2)n.lost+=dt;else n.lost=0;if(n.lost>2.5||n.ht>CITY_PAT_GIVEUP){n.cool=15;cityPatrolBack(n)}return}
+ if(n.st==='back'){if(n.path.length){cityStep(n,n.spd*1.3,dt);return}n.st='route'}
+ const rt=cityPatrolRoutes()[n.ri].pts;if(!n.path.length){n.k=(n.k+1)%rt.length;n.path=[{x:rt[n.k].x,y:rt[n.k].y}]}cityStep(n,n.spd,dt)}
+
+// ----- рисование -----
+function cityActiveRoutes(){const on={};for(const n of CITY_RT.pats)on[n.ri]=1;return cityPatrolRoutes().filter((_,i)=>on[i])}
+function cityDrawRoutes(g){g.save();g.setLineDash([4,10]);g.lineWidth=4;g.strokeStyle='rgba(90,150,255,.42)';for(const r of cityActiveRoutes()){g.beginPath();r.line.forEach((q,i)=>i?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y));if(r.loop)g.closePath();g.stroke()}g.restore()}
+function cityDrawPatrols(g,ped,t){for(const n of CITY_RT.pats){ped(n,n.col,false);const on=Math.sin(t*9+n.ri)>0;g.fillStyle=on?'#ff3b3b':'#3b8bff';g.beginPath();g.arc(n.x,n.y-1,2.6,0,6.29);g.fill()}}
+function cityDrawOver(g,t){const c=S.city;
+ for(const k of CITY_CAMS){const hot=t-k.flash<1.2,armed=c.bag>0;g.beginPath();g.arc(k.x,k.y,k.r,0,6.29);g.fillStyle=hot?'rgba(255,60,60,.28)':armed?'rgba(255,60,60,.12)':'rgba(255,60,60,.06)';g.fill();
+  g.setLineDash([6,6]);g.strokeStyle=armed?'rgba(255,110,110,.8)':'rgba(255,110,110,.4)';g.lineWidth=2;g.stroke();g.setLineDash([]);
+  const ix=k.x+k.r*.72,iy=k.y-k.r*.72;g.fillStyle='rgba(30,8,10,.9)';g.beginPath();g.arc(ix,iy,16,0,6.29);g.fill();g.strokeStyle='rgba(255,110,110,.8)';g.lineWidth=1.5;g.stroke();g.font='19px system-ui';g.fillStyle='#fff';g.fillText('📹',ix,iy+1)}
+ const R=cityPatrolR();for(const n of CITY_RT.pats){const hunt=n.st==='hunt'||n===CITY_RT.chaser;g.beginPath();g.arc(n.x,n.y,R,0,6.29);g.fillStyle=hunt?'rgba(255,70,70,.10)':'rgba(70,140,255,.08)';g.fill();
+  g.setLineDash(hunt?[]:[5,7]);g.strokeStyle=hunt?(Math.sin(t*14)>0?'#f44':'#48f'):'rgba(110,170,255,.6)';g.lineWidth=hunt?2.5:1.5;g.stroke();g.setLineDash([]);
+  g.beginPath();g.arc(n.x,n.y,8,0,6.29);g.fillStyle='#2a5bd7';g.fill();g.strokeStyle='#fff';g.lineWidth=2;g.stroke();g.fillStyle=Math.sin(t*9+n.ri)>0?'#ff3b3b':'#9cc8ff';g.beginPath();g.arc(n.x,n.y,3,0,6.29);g.fill();if(hunt){g.font='16px system-ui';g.fillText('🚨',n.x,n.y-20)}}}
+
+// ----- обвязка -----
+// верхняя панель: часы и звёзды рядом с днём; кнопка дня — «Спать»
+const cityClockRender=render;render=function(){cityClockRender();if(!S||!S.city)return;const st=$('st');if(st&&typeof st.innerHTML==='string'&&!S.over){let h=st.innerHTML; // «Ночная смена»: отдельная тонкая строка под днём и деньгами (в одну строку с крупной суммой не влезает на телефоне)
+  if(h.includes('<div class="hud-meters">'))h=h.replace('<div class="hud-meters">',cityClockHud(true)+'<div class="hud-meters">');else if(/^<span>📅[^<]*<\/span>/.test(h))h=h.replace(/^(<span>📅[^<]*<\/span>)/,'$1'+cityClockHud(false));else h=cityClockHud(false)+h;st.innerHTML=h;CITY_RT.clk=cityClockStr()}
+ const dk=$('dock');if(dk&&typeof dk.innerHTML==='string'&&dk.innerHTML.includes('nextday')){const [ico,...rest]=CITY_T.clock.btnSleep.split(' ');dk.innerHTML=dk.innerHTML.replace('▶',ico).replace('Следующий день',rest.join(' '))}};
+if(typeof NEO_COPY!=='undefined'&&NEO_COPY.steps&&NEO_COPY.steps[2])NEO_COPY.steps[2]=CITY_T.clock.onboard;
+if(typeof sndForLog==='function'){const cityWantedSnd=sndForLog;sndForLog=function(t,c){const s=String(t).replace(/<[^>]+>/g,'').trim(),e=((s.match(/^(\p{Extended_Pictographic}️?)/u)||[])[1]||'').replace('️','');
+ switch(e){case '📹':return 'shutter';case '🌙':return c==='r'?'bad':'sleep';case '⏰':return 'buzz';case '📻':return 'buzz';case '⭐':return c==='r'?'siren':'buzz'}return cityWantedSnd(t,c)}}
 
 // Тексты главы 1. Автор: Claude Opus 5.5 (claude-subscription-directsdk-experimental / claude-opus-5-5).
 const STORY_T={
@@ -2065,7 +2237,7 @@ function storyPick(key){const st=S.story;if(!st||!st.scene||st.res)return;
   st.flags.pres=key;st.res=ch.res;log('📌 '+STORY_FILL(ch.res[0],st),key==='truth'?'b':'y');return render()}}
 function storyNext(){const st=S.story;if(!st||!st.scene)return;const sc=st.scene;
  if(['meet','bridge','rival','present','max3','car3'].includes(sc)&&!st.res)return;
- st.scene=null;st.res=null;
+ st.scene=null;st.res=null;if(S.city)cityAdvance(CITY_COST.scene); // сцена заняла время, часы стояли, пока она была открыта
  if(sc==='intro')storyGo('goCity');else if(sc==='meet')storyGo('hire');else if(sc==='bridge')storyGo('wait');
  else if(sc==='end'){storyGo('done');st.ch1done=1;log('📌 '+STORY_FILL(STORY_T.end.teaser,st),'b')}
  else if(sc==='call')storyGo('oko');else if(sc==='talk')storyGo('stakan');else if(sc==='present')storyGo('wait2');

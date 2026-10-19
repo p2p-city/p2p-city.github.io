@@ -1,5 +1,5 @@
 // Change VERSION whenever published files change. Cache only this app's files.
-const VERSION='city-11';
+const VERSION='city-12';
 const ASSETS=['./','./index.html','./arbitrazhnik3.html','./manifest.webmanifest','./icon.svg','./icon-180.png','./icon-192.png','./icon-512.png'];
 const ALLOWED=new Set(ASSETS.map(p=>new URL(p,self.registration.scope).href));
 self.addEventListener('install',e=>e.waitUntil(caches.open(VERSION).then(c=>c.addAll(ASSETS))));
